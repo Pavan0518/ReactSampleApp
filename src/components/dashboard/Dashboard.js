@@ -3,6 +3,7 @@ import './Dashboard.css';
 import { Modal, Button, FormControl } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import RecordPopup from './RecordPopup';
+import CommonGrid from '../reusable/CommonGrid';
 
 
 class Dashboard extends Component {
@@ -12,7 +13,8 @@ class Dashboard extends Component {
         this.state = {
             employees: [],
             showPopup: false,
-            editInfo: this.initialState
+            editInfo: this.initialState,
+            operations: { insert: true, update: true, delete: true }
         };
         this.logout = this.logout.bind(this);
         this.togglePopup = this.togglePopup.bind(this);
@@ -102,6 +104,7 @@ class Dashboard extends Component {
 
         }).catch(error => {
             this.setState({ editInfo: this.initialState })
+            console.log(error);
             alert('error');
             // event.preventDefault();
 
@@ -134,8 +137,9 @@ class Dashboard extends Component {
         let url = "http://localhost:54385/api/Employee/GetAllEmployees";
         fetch(url, obj)
             .then(res => res.json())
-            .then(result => {
-                this.setState({ employees: result });
+            .then(data => {
+                data.map(emp => emp["name"] = emp["fName"] + ' ' + emp["lName"])
+                this.setState({ employees: data });
             }).catch(error => {
 
             });
@@ -160,48 +164,22 @@ class Dashboard extends Component {
                             </ul>
                         </div>
                     </nav>
-
-                    <div className="tbl-parent">
-                        <a href="#" onClick={this.addRecord} style={{ float: 'right' }}>Add</a>
-                        <table className="table table-hover table-bordered">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Id</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">E-Mail</th>
-                                    <th scope="col">Gender</th>
-                                    <th scope="col">Designation</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {
-                                    this.state.employees.map(emp => {
-                                        return (
-                                            <tr key={emp.id}>
-                                                <td className="word-wrap-text">{emp.id}</td>
-                                                <td className="word-wrap-text">{emp.fName} {emp.lName}</td>
-                                                <td className="word-wrap-text">{emp.email}</td>
-                                                <td className="word-wrap-text">{emp.gender}</td>
-                                                <td className="word-wrap-text">{emp.designation}</td>
-                                                <td>
-                                                    <a href="#" onClick={() =>
-                                                        this.handleShow(this, emp)
-
-                                                    }>Edit</a> &nbsp;&nbsp; <a href="#" onClick={() => this.deleteHandler(this, emp.id)}>Delete</a>
-                                                </td>
-                                            </tr>
-                                        )
-                                    })
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    {/* {
-                        this.state.showPopup ?
-                            <RecordPopup show={this.state.showPopup} empdata={this.state.editInfo}></RecordPopup> : null
-                    } */}
-
+                    <CommonGrid
+                        data={this.state.employees}
+                        dColNames={['Id', 'Name', 'E-Mail', 'Gender', 'Designation', 'Actions']}
+                        colNames={['id', 'name', 'email', 'gender', 'designation']}
+                        opi={true}
+                        opu={true}
+                        opd={true}
+                        addRecord={this.addRecord}
+                        hrefEdithandler={this.handleShow}
+                        hrefDeletehandler={this.deleteHandler}
+                    />
+                    {/* <CommonGrid addRecord={this.addRecord}
+                        data={this.state.employees}
+                        dColNames={['Id', 'Name', 'E-Mail']}
+                        colNames={['id', 'name', 'email']}
+                    /> */}
                     <Modal
                         show={this.state.showPopup}
                         onHide={this.handleClose}

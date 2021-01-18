@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import logo from './logo.svg';
 import appSytles from './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import Login from './components/login/Login';
 import Dashboard from './components/dashboard/Dashboard';
 import SignUp from './components/signup/SignUp';
 import LoginProtectedRoutes from './protected-routes/LoginProtectedRoutes';
 import RecordPopup from './components/dashboard/RecordPopup';
+import auth from './services/Auth';
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
@@ -18,22 +19,25 @@ function App() {
     else setIsAuth(false);
   }
   const handleLogout = e => {
-      setIsAuth(false);
+    setIsAuth(false);
   }
+
   return (
     <div className={appSytles.App}>
       <div className={appSytles.wrapper}>
-        <BrowserRouter>
+        <Router>
           <Switch>
-            <Route exact path="/login" component={Login}></Route>
-            <Route exact path="/" component={Dashboard}></Route>
-            {/* <Route exact path='/' handleLogin={handleLogin} render={props => <Login {...props} isAuth={isAuth} handleLogin={handleLogin} />} /> */}
-            {/* <LoginProtectedRoutes path="/" handleLogout={handleLogout} isAuth={isAuth} component={Dashboard} /> */}
-            <Route path="/signup" component={SignUp}></Route>
+            <Route exact path="/login" handleLogin={handleLogin} render={() => {
+              return localStorage["token"] ? <Redirect to={"/"} /> : <Login />
+            }}></Route>
+            <LoginProtectedRoutes exact path="/" handleLogin={handleLogin} isAuth={isAuth} component={Dashboard} />
+            <Route exact path="/signup" handleLogin={handleLogin} render={(props) => {
+              return localStorage["token"] ? <Redirect to={"/"} /> : <SignUp {...props}/>
+            }}></Route>
           </Switch>
-        </BrowserRouter>
+        </Router>
       </div>
-    </div>
+    </div >
   );
 }
 // ReactDOM.render(<BrowserRouter><App></App></BrowserRouter>,
