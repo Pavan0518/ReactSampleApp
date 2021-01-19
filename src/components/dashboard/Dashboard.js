@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import './Dashboard.css';
-import { Modal, Button, FormControl } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
-import RecordPopup from './RecordPopup';
 import CommonGrid from '../reusable/CommonGrid';
-
-
+import { Get, Post, Delete } from '../../http-service/httpservice';
 class Dashboard extends Component {
-
     constructor(prop) {
         super(prop);
         this.state = {
@@ -16,7 +13,7 @@ class Dashboard extends Component {
             editInfo: this.initialState,
             operations: { insert: true, update: true, delete: true }
         };
-        this.logout = this.logout.bind(this);
+        // this.logout = this.logout.bind(this);
         this.togglePopup = this.togglePopup.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleShow = this.handleShow.bind(this);
@@ -27,7 +24,6 @@ class Dashboard extends Component {
     }
     get initialState() {
         return {
-
             id: 0,
             fName: "",
             lName: "",
@@ -41,9 +37,7 @@ class Dashboard extends Component {
         let name = event.target.name;
         editInfo[name] = event.target.value;
         this.setState({ editInfo: editInfo });
-        // this.setState({ editInfo: { id: this.state.editInfo.id } });
         event.preventDefault();
-
     }
     handleClose(event) {
         this.setState({ showPopup: false });
@@ -52,72 +46,44 @@ class Dashboard extends Component {
     handleShow(event, emp) {
         this.setState({ editInfo: emp });
         this.setState({ showPopup: true });
-        // return <RecordPopup show={this.state.showPopup} empdata={this.state.editInfo}></RecordPopup>;
     }
     addRecord(event) {
         event.preventDefault();
         this.setState({ editInfo: this.initialState });
         this.setState({ showPopup: true });
     }
-    deleteHandler(event, Id) {
-        // event.preventDefault();
-        const url = "http://localhost:54385/api/Employee/DeleteEmployee?Id=" + Id;
-        var obj = {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage['token'],
-                'content-type': 'application/json; charset=utf-8'
-            },
-            body: null
-        };
-        fetch(url, obj).then(response => {
+    async deleteHandler(event, Id) {
+        await Delete(`Employee/DeleteEmployee?Id=${Id}`).then(response => {
             this.componentDidMount();
         }).catch(error => {
             alert('error');
         });
-
     }
-    saveHandler(event) {
+    async saveHandler(event) {
         event.preventDefault();
-        let Id = this.state.editInfo.id == 0 ? 0 : this.state.editInfo.id;
-        let url = "http://localhost:54385/api/Employee/SaveEmployee";
-        var obj = {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage['token'],
-                'content-type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({
-                id: Id,
-                fName: this.state.editInfo.fName,
-                lName: this.state.editInfo.lName,
-                designation: this.state.editInfo.designation,
-                email: this.state.editInfo.email,
-                gender: this.state.editInfo.gender
-            }),
-        };
-        fetch(url, obj).then(response => {
+        let body = {
+            id: this.state.editInfo.id == 0 ? 0 : this.state.editInfo.id,
+            fName: this.state.editInfo.fName,
+            lName: this.state.editInfo.lName,
+            designation: this.state.editInfo.designation,
+            email: this.state.editInfo.email,
+            gender: this.state.editInfo.gender
+        }
+        await Post("Employee/SaveEmployee", body).then(response => {
             this.setState({ editInfo: this.initialState })
             this.setState({ showPopup: false });
             this.componentDidMount();
-            // event.preventDefault();
-
         }).catch(error => {
             this.setState({ editInfo: this.initialState })
             console.log(error);
             alert('error');
-            // event.preventDefault();
-
         });
-        // event.preventDefault();
-
-
     }
-    logout(event) {
-        event.preventDefault();
-        localStorage.clear();
-        this.props.history.push("/login");
-    }
+    // logout(event) {
+    //     event.preventDefault();
+    //     localStorage.clear();
+    //     this.props.history.push("/login");
+    // }
 
     togglePopup() {
         this.setState({
@@ -125,30 +91,23 @@ class Dashboard extends Component {
         });
     }
     componentDidMount() {
-        var obj = {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + localStorage['token'],
-                'content-type': 'application/json; charset=utf-8'
-            },
-            body: null,
-        };
-
-        let url = "http://localhost:54385/api/Employee/GetAllEmployees";
-        fetch(url, obj)
-            .then(res => res.json())
+        this.getAllEmployees();
+    }
+    async getAllEmployees() {
+        await Get("Employee/GetAllEmployees")
+            .then(res => res.data)
             .then(data => {
                 data.map(emp => emp["name"] = emp["fName"] + ' ' + emp["lName"])
                 this.setState({ employees: data });
             }).catch(error => {
-
+                console.log('Error : ' + error);
             });
     }
     render() {
         if (this.state.employees) {
             return (
                 <div className="d-wrapper">
-                    <nav className="navbar navbar-expand-md navbar-dark bg-primary">
+                    {/* <nav className="navbar navbar-expand-md navbar-dark bg-primary">
                         <a className="navbar-brand" href="#">Logo</a>
                         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText">
                             <span className="navbar-toggler-icon"></span>
@@ -163,7 +122,7 @@ class Dashboard extends Component {
                                 </li>
                             </ul>
                         </div>
-                    </nav>
+                    </nav> */}
                     <CommonGrid
                         data={this.state.employees}
                         dColNames={['Id', 'Name', 'E-Mail', 'Gender', 'Designation', 'Actions']}

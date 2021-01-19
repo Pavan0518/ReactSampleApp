@@ -5,6 +5,7 @@ function LoginProtectedRoutes({ isAuth: isAuth, component: Component, ...rest })
         <Route {...rest} render={
             props => {
                 isAuth = localStorage["token"] ? true : false
+                rest.handleLogin(this);// handleLogin(this);
                 return isAuth ? <Component {...rest} {...props} /> : <Redirect to={{ pathname: "/login", state: { from: props.location } }} />
             }
         } />

@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import {getTokenDetails} from '../../services/token.service';
+import jwt_decode from 'jwt-decode';
 // import axios from "axios";
 // import { useHistory } from 'react-router-dom';
 import './Login.css';
@@ -32,12 +34,12 @@ class Login extends Component {
         
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
         // debugger;
         const { username, password } = this.state;
         let errors = this.state.errors;
-        fetch("http://localhost:54385/api/Login/GenerateToken", {
+        await fetch("http://localhost:54385/api/Login/GenerateToken", {
             "method": "POST",
             "headers": {
                 "content-type": "application/json"
@@ -49,9 +51,8 @@ class Login extends Component {
         }).then(response => response.json())
             .then(response => {
                 if (response.token) {
-
                     localStorage["token"] = response.token;
-                    // this.props.handleLogin(event);
+                    this.props.handleLogin(this);
                     // this.props.isAuth = true;
                     this.props.history.push("/");
                 } else {
@@ -73,7 +74,6 @@ class Login extends Component {
 
         return (
             <div className="wrapper">
-
                 <div id="login">
                     <div className="container">
                         <div id="login-row" className="row justify-content-center align-items-center">
