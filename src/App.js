@@ -8,6 +8,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import SignUp from './components/signup/SignUp';
 import LoginProtectedRoutes from './protected-routes/LoginProtectedRoutes';
 import Header from './components/header/Header';
+import NewSignUp from './components/signup/NewSignUp';
 // import { hashHistory } from 'react-router;'
 
 function App(props) {
@@ -28,16 +29,20 @@ function App(props) {
   return (
     <div className={appSytles.App}>
       <div className={appSytles.wrapper}>
-        <Header {...props} logout={logout} handleLogin={handleLogin} isAuth={isAuth}/>
+        <Header {...props} logout={logout} handleLogin={handleLogin} isAuth={isAuth} />
         <Router>
           <Switch>
             <Route exact path="/login" handleLogin={handleLogin} render={() => {
-              return localStorage["token"] ? <Redirect to={"/"} /> : <Login handleLogin={handleLogin} {...props}/>
+              return localStorage["token"] ? <Redirect to={"/"} /> : <Login handleLogin={handleLogin} {...props} />
             }}></Route>
 
             <LoginProtectedRoutes exact path="/" handleLogin={handleLogin} isAuth={isAuth} component={Dashboard} />
             <Route exact path="/signup" handleLogin={handleLogin} render={(props) => {
               return localStorage["token"] ? <Redirect to={"/"} /> : <SignUp {...props} />
+            }}></Route>
+
+            <Route exact path="/newsignup" handleLogin={handleLogin} render={(props) => {
+              return localStorage["token"] ? <Redirect to={"/"} /> : <NewSignUp {...props} />
             }}></Route>
           </Switch>
         </Router>

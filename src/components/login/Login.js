@@ -29,7 +29,7 @@ class Login extends Component {
     }
 
     navigate(event) {
-        this.props.history.push("/signup");
+        this.props.history.push("/newsignup");
         event.preventDefault();
         
     }
