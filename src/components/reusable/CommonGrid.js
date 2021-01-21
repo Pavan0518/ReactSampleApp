@@ -1,7 +1,5 @@
 import React from 'react'
-import { Modal, Button, FormControl } from 'react-bootstrap';
-import NavbarCollapse from 'react-bootstrap/esm/NavbarCollapse';
-import Pagination from 'react-js-pagination';
+
 
 function CommonGrid(props) {
     const { dColNames, colNames } = props;
@@ -38,8 +36,8 @@ function CommonGrid(props) {
                             return (
                                 <tr key={emp.id}>
                                     {
-                                        colNames.map(col => {
-                                            return <td className="word-wrap-text">{emp[col]}</td>
+                                        colNames.map((col, index) => {
+                                            return <td key={index} className="word-wrap-text">{emp[col]}</td>
                                         })
                                     }
                                     {
@@ -48,7 +46,7 @@ function CommonGrid(props) {
                                                 <td>
                                                     {
                                                         opu ?
-                                                            (<a style={{ "padding-right": "10px" }} href="#" onClick={() => props.hrefEdithandler(this, emp)}>Edit</a>)
+                                                            (<a style={{ "paddingRight": "10px" }} href="#" onClick={() => props.hrefEdithandler(this, emp)}>Edit</a>)
                                                             : null
                                                     }
 

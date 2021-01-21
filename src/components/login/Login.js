@@ -1,12 +1,7 @@
 import React, { Component } from "react";
-import {getTokenDetails} from '../../services/token.service';
-import jwt_decode from 'jwt-decode';
-// import axios from "axios";
-// import { useHistory } from 'react-router-dom';
 import './Login.css';
-import Dashboard from "../dashboard/Dashboard";
-import { Redirect, withRouter } from "react-router-dom";
-// import '../../App.css';
+import { withRouter } from "react-router-dom";
+import { Post } from "../../http-service/httpservice";
 
 class Login extends Component {
     constructor(props) {
@@ -31,40 +26,27 @@ class Login extends Component {
     navigate(event) {
         this.props.history.push("/newsignup");
         event.preventDefault();
-        
+
     }
 
     async handleSubmit(event) {
         event.preventDefault();
-        // debugger;
-        const { username, password } = this.state;
-        let errors = this.state.errors;
-        await fetch("http://localhost:54385/api/Login/GenerateToken", {
-            "method": "POST",
-            "headers": {
-                "content-type": "application/json"
-            },
-            "body": JSON.stringify({
-                email: this.state.username,
-                password: this.state.password
-            })
-        }).then(response => response.json())
-            .then(response => {
-                if (response.token) {
-                    localStorage["token"] = response.token;
-                    this.props.handleLogin(this);
-                    // this.props.isAuth = true;
-                    this.props.history.push("/");
-                } else {
-                    this.setState({ errors: "Unable to login. Please check your user name or password." })
-                }
-            })
-            .catch(err => {
+        const body = {
+            email: this.state.username,
+            password: this.state.password
+        }
+        await Post("Login/GenerateToken", body, false).then(response => {
+            if (response.data.token && response.data.token != "undefined") {
+                this.props.handleLogin(this);
+                localStorage["token"] = response.data.token;
+                this.props.history.push("/");
+            } else {
                 this.setState({ errors: "Unable to login. Please check your user name or password." })
-                console.log("Unable to login. Please check your user name or password.");
-                // event.preventDefault();
-            });
-
+            }
+        }).catch(err => {
+            this.setState({ errors: "Unable to login. Please check your user name or password." })
+            console.log("Unable to login. Please check your user name or password.");
+        });
     }
 
     render() {
@@ -112,10 +94,7 @@ class Login extends Component {
                     </div>
                 </div>
             </div>
-
         );
-
-
     }
 }
 export default withRouter(Login);

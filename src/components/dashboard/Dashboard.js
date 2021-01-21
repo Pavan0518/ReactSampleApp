@@ -62,7 +62,7 @@ class Dashboard extends Component {
     async saveHandler(event) {
         event.preventDefault();
         let body = {
-            id: this.state.editInfo.id == 0 ? 0 : this.state.editInfo.id,
+            id: this.state.editInfo.id === 0 ? 0 : this.state.editInfo.id,
             fName: this.state.editInfo.fName,
             lName: this.state.editInfo.lName,
             designation: this.state.editInfo.designation,
@@ -79,12 +79,7 @@ class Dashboard extends Component {
             alert('error');
         });
     }
-    // logout(event) {
-    //     event.preventDefault();
-    //     localStorage.clear();
-    //     this.props.history.push("/login");
-    // }
-
+ 
     togglePopup() {
         this.setState({
             showPopup: !this.state.showPopup
@@ -107,22 +102,6 @@ class Dashboard extends Component {
         if (this.state.employees) {
             return (
                 <div className="d-wrapper">
-                    {/* <nav className="navbar navbar-expand-md navbar-dark bg-primary">
-                        <a className="navbar-brand" href="#">Logo</a>
-                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                        <div className="collapse navbar-collapse" id="navbarText">
-                            <ul className="navbar-nav mr-auto">
-                                <li className="nav-item active">
-                                    <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link" href="#" onClick={this.logout}>Logout</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </nav> */}
                     <CommonGrid
                         data={this.state.employees}
                         dColNames={['Id', 'Name', 'E-Mail', 'Gender', 'Designation', 'Actions']}

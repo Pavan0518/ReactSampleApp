@@ -7,10 +7,6 @@ class Header extends Component {
     userName = "";
     constructor(props) {
         super(props)
-
-        this.state = {
-
-        }
     }
     render() {
         if (!this.props.isAuth) {
@@ -18,12 +14,10 @@ class Header extends Component {
         }
         else {
             this.props.handleLogin();
-            // this.props.isAuth = true;
             this.userName = getTokenDetails();
         }
         return (
             <div>
-                {/* D:\Edu\React\Poc-App\sample-app\src\large.png */}
                 <nav className="navbar navbar-expand-md navbar-dark bg-primary">
                     <a className="navbar-brand" href="#"><img src={logo} className="App-logo" alt="logo"></img></a>
                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText">

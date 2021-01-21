@@ -9,6 +9,7 @@ import SignUp from './components/signup/SignUp';
 import LoginProtectedRoutes from './protected-routes/LoginProtectedRoutes';
 import Header from './components/header/Header';
 import NewSignUp from './components/signup/NewSignUp';
+import ErrorBoundary from './components/Error/ErrorBoundary';
 // import { hashHistory } from 'react-router;'
 
 function App(props) {
@@ -29,20 +30,20 @@ function App(props) {
   return (
     <div className={appSytles.App}>
       <div className={appSytles.wrapper}>
-        <Header {...props} logout={logout} handleLogin={handleLogin} isAuth={isAuth} />
+        <ErrorBoundary>
+          <Header {...props} logout={logout} handleLogin={handleLogin} isAuth={isAuth} />
+        </ErrorBoundary>
         <Router>
           <Switch>
             <Route exact path="/login" handleLogin={handleLogin} render={() => {
-              return localStorage["token"] ? <Redirect to={"/"} /> : <Login handleLogin={handleLogin} {...props} />
+              return localStorage["token"] ? <Redirect to={"/"} /> : <ErrorBoundary><Login handleLogin={handleLogin} {...props} /></ErrorBoundary>
             }}></Route>
-
             <LoginProtectedRoutes exact path="/" handleLogin={handleLogin} isAuth={isAuth} component={Dashboard} />
             <Route exact path="/signup" handleLogin={handleLogin} render={(props) => {
-              return localStorage["token"] ? <Redirect to={"/"} /> : <SignUp {...props} />
+              return localStorage["token"] ? <Redirect to={"/"} /> : <ErrorBoundary><SignUp {...props} /></ErrorBoundary>
             }}></Route>
-
             <Route exact path="/newsignup" handleLogin={handleLogin} render={(props) => {
-              return localStorage["token"] ? <Redirect to={"/"} /> : <NewSignUp {...props} />
+              return localStorage["token"] ? <Redirect to={"/"} /> : <ErrorBoundary><NewSignUp {...props} /></ErrorBoundary>
             }}></Route>
           </Switch>
         </Router>
